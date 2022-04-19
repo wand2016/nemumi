@@ -7,6 +7,7 @@ import { PrefectureResponse } from "./api/Prefecture";
 import { useEffect, useState } from "react";
 import { PopulationCompositionResponse } from "./api/PopulationComposition";
 import { LineChart, Tooltip, CartesianGrid, Line, XAxis } from "recharts";
+import ThePrefectureSelector from "./components/ThePrefectureSelector";
 
 const fetcher = async (url: string) => {
   const axiosInstance = axios.create({
@@ -57,15 +58,15 @@ function App() {
   const [prefectureCheckState, setPrefectureCheckState] =
     useState<PrefectureCheckState>({});
 
-  const { data: prefectures, error } = useSWR<PrefectureResponse>(
+  const { data, error } = useSWR<PrefectureResponse>(
     endpoints.prefectures,
     fetcher
   );
 
   useEffect(() => {
-    if (!prefectures) return;
+    if (!data) return;
 
-    const initState: PrefectureCheckState = prefectures.result.reduce(
+    const initState: PrefectureCheckState = data.result.reduce(
       (prev, { prefCode }) => ({
         ...prev,
         [prefCode]: false,
@@ -74,50 +75,34 @@ function App() {
     );
 
     setPrefectureCheckState(initState);
-  }, [prefectures]);
+  }, [data]);
 
   if (error) return <div>failed to load</div>;
-  if (!prefectures) return <div>loading...</div>;
+  if (!data) return <div>loading...</div>;
 
-  const isChecked = (prefCode: number) =>
-    prefectureCheckState[`${prefCode}`] ?? false;
-  const toggle = (prefCode: number) => {
-    setPrefectureCheckState((prevState) => ({
-      ...prevState,
-      [prefCode]: !prevState[prefCode],
-    }));
-  };
-  const checkedPrefectureCodes = () =>
-    Object.entries(prefectureCheckState)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .filter(([_prefCode, checked]) => checked)
-      .map(([prefCode]) => `${prefCode}`);
+  const prefectures = data.result.map(({ prefCode, prefName }) => ({
+    code: `${prefCode}`,
+    name: prefName,
+  }));
 
-  console.log(isChecked(1));
+  const checkedPrefectureCodes = Object.entries(prefectureCheckState)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    .filter(([_prefCode, checked]) => checked)
+    .map(([prefCode]) => prefCode);
 
   return (
     <div className="App">
       <header>Title</header>
-      <section>
-        <h2>都道府県</h2>
-        {prefectures.result.map(({ prefCode, prefName }) => (
-          <span key={prefCode}>
-            <label>
-              <input
-                type="checkbox"
-                value={isChecked(prefCode)}
-                onClick={() => toggle(prefCode)}
-              />
-              {prefName}
-            </label>
-          </span>
-        ))}
-      </section>
+      <ThePrefectureSelector
+        prefectures={prefectures}
+        checked={prefectureCheckState}
+        onChange={setPrefectureCheckState}
+      />
 
-      {checkedPrefectureCodes().length === 0 ? (
+      {checkedPrefectureCodes.length === 0 ? (
         <div>not selected</div>
       ) : (
-        <Popu prefectureCodes={checkedPrefectureCodes()} />
+        <Popu prefectureCodes={checkedPrefectureCodes} />
       )}
       <section>
         <h2>debug</h2>
