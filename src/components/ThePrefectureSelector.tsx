@@ -1,9 +1,6 @@
 import * as React from "react";
+import { Prefecture } from "../domain/Prefecture";
 
-export type Prefecture = {
-  code: string;
-  name: string;
-};
 export type PrefectureCheckedState = Record<Prefecture["code"], boolean>;
 export type Props = {
   prefectures: Readonly<Prefecture[]>;

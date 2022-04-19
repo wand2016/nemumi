@@ -1,13 +1,9 @@
 import * as React from "react";
 import useSWR from "swr";
 import { LineChart, Tooltip, CartesianGrid, Line, XAxis } from "recharts";
-import { PopulationCompositionResponse } from "../api/PopulationComposition";
-import { endpoints, fetcher } from "../api";
+import { endpoints, fetcher, PopulationCompositionResponse } from "../api";
+import { Prefecture } from "../domain/Prefecture";
 
-export type Prefecture = {
-  code: string;
-  name: string;
-};
 type DataLine = {
   year: number;
 } & Record<Prefecture["code"], number>;

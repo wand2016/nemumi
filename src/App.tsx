@@ -2,8 +2,7 @@ import * as React from "react";
 import "./App.css";
 import useSWR from "swr";
 import { useEffect, useState } from "react";
-import { endpoints, fetcher } from "./api";
-import { PrefectureResponse } from "./api/Prefecture";
+import { endpoints, fetcher, PrefectureResponse } from "./api";
 import ThePrefectureSelector from "./components/ThePrefectureSelector";
 import { ThePopulationChartContainer } from "./components/ThePopulationChart";
 
@@ -58,10 +57,6 @@ function App() {
       ) : (
         <ThePopulationChartContainer prefectureCodes={checkedPrefectureCodes} />
       )}
-      <section>
-        <h2>debug</h2>
-        {JSON.stringify(prefectureCheckState)}
-      </section>
     </div>
   );
 }

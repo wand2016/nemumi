@@ -4,7 +4,7 @@ export type PopulationCompositionResponse =
   ResasResponse<PopulationComposition>;
 
 /** 人口構成 */
-export type PopulationComposition = {
+type PopulationComposition = {
   /** 実績値と推定値のさかいめ */
   boundaryYear: number;
   data: GenerationData[];
