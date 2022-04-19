@@ -105,7 +105,7 @@ function App() {
             <label>
               <input
                 type="checkbox"
-                checked={isChecked(prefCode)}
+                value={isChecked(prefCode)}
                 onClick={() => toggle(prefCode)}
               />
               {prefName}
