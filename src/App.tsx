@@ -6,6 +6,7 @@ import { baseUrl, endpoints } from "./api";
 import { PrefectureResponse } from "./api/Prefecture";
 import { useEffect, useState } from "react";
 import { PopulationCompositionResponse } from "./api/PopulationComposition";
+import { LineChart, Tooltip, CartesianGrid, Line, XAxis } from "recharts";
 
 const fetcher = async (url: string) => {
   const axiosInstance = axios.create({
@@ -35,7 +36,17 @@ function Popu({ prefectureCodes }: Props) {
       <header>Title</header>
       <section>
         <h2>人口数</h2>
-        {JSON.stringify(data)}
+        <LineChart
+          width={400}
+          height={400}
+          data={data.result.data[0].data}
+          margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+        >
+          <XAxis dataKey="year" />
+          <Tooltip />
+          <CartesianGrid stroke="#f5f5f5" />
+          <Line type="monotone" dataKey="value" stroke="#387908" yAxisId={0} />
+        </LineChart>
       </section>
     </>
   );
