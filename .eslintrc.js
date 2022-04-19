@@ -4,20 +4,23 @@ module.exports = {
     es2021: true,
   },
   extends: [
-    'plugin:react/recommended',
-    'airbnb',
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "airbnb",
+    "airbnb-typescript",
+    "prettier",
   ],
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
-    ecmaVersion: 'latest',
+    ecmaVersion: "latest",
+    project: "./tsconfig.json",
   },
-  plugins: [
-    'react',
-    '@typescript-eslint',
-  ],
+  plugins: ["react", "react-hooks", "@typescript-eslint"],
   rules: {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
   },
 };
