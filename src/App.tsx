@@ -1,42 +1,33 @@
 import * as React from "react";
 import "./App.css";
-import useSWR from "swr";
 import { useEffect, useState } from "react";
-import { endpoints, fetcher, PrefectureResponse } from "./api";
 import ThePrefectureSelector from "./components/ThePrefectureSelector";
 import { ThePopulationChartContainer } from "./components/ThePopulationChart";
+import usePrefectures from "./hooks/usePrefectures";
 
 function App() {
   type PrefectureCheckState = Record<string, boolean>;
   const [prefectureCheckState, setPrefectureCheckState] =
     useState<PrefectureCheckState>({});
 
-  const { data, error } = useSWR<PrefectureResponse>(
-    endpoints.prefectures,
-    fetcher
-  );
+  const { prefectures, error } = usePrefectures();
 
   useEffect(() => {
-    if (!data) return;
+    if (!prefectures) return;
 
-    const initState: PrefectureCheckState = data.result.reduce(
-      (prev, { prefCode }) => ({
+    const initState: PrefectureCheckState = prefectures.reduce(
+      (prev, { code }) => ({
         ...prev,
-        [prefCode]: false,
+        [code]: false,
       }),
       {}
     );
 
     setPrefectureCheckState(initState);
-  }, [data]);
+  }, [prefectures]);
 
   if (error) return <div>failed to load</div>;
-  if (!data) return <div>loading...</div>;
-
-  const prefectures = data.result.map(({ prefCode, prefName }) => ({
-    code: `${prefCode}`,
-    name: prefName,
-  }));
+  if (!prefectures) return <div>loading...</div>;
 
   const checkedPrefectureCodes = Object.entries(prefectureCheckState)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
