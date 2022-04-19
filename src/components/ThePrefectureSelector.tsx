@@ -7,7 +7,7 @@ export type Prefecture = {
 export type PrefectureCheckedState = Record<Prefecture["code"], boolean>;
 export type Props = {
   prefectures: Readonly<Prefecture[]>;
-  /**  a dictionary of prefectoreCode -> checked */
+  /**  a dictionary of prefectureCode -> checked */
   checked: Readonly<PrefectureCheckedState>;
   onChange: (checked: PrefectureCheckedState) => Promise<void> | void;
 };
