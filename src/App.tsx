@@ -5,6 +5,7 @@ import axios from "axios";
 import { baseUrl, endpoints } from "./api";
 import { PrefectureResponse } from "./api/Prefecture";
 import { useEffect, useState } from "react";
+import { PopulationCompositionResponse } from "./api/PopulationComposition";
 
 const fetcher = async (url: string) => {
   const axiosInstance = axios.create({
@@ -15,6 +16,30 @@ const fetcher = async (url: string) => {
   const response = await axiosInstance.get(url);
   return response.data;
 };
+
+type Props = {
+  prefectureCodes: string[];
+};
+function Popu({ prefectureCodes }: Props) {
+  // TODO: multiple prefectures
+  const { data, error } = useSWR<PopulationCompositionResponse>(
+    `${endpoints.populationComposition}?prefCode=${prefectureCodes[0]}`,
+    fetcher
+  );
+
+  if (error) return <div>failed to load</div>;
+  if (!data) return <div>loading...</div>;
+
+  return (
+    <>
+      <header>Title</header>
+      <section>
+        <h2>人口数</h2>
+        {JSON.stringify(data)}
+      </section>
+    </>
+  );
+}
 
 function App() {
   type PrefectureCheckState = Record<string, boolean>;
@@ -43,13 +68,21 @@ function App() {
   if (error) return <div>failed to load</div>;
   if (!prefectures) return <div>loading...</div>;
 
-  const checked = (prefCode: number) => prefectureCheckState[`${prefCode}`];
+  const isChecked = (prefCode: number) =>
+    prefectureCheckState[`${prefCode}`] ?? false;
   const toggle = (prefCode: number) => {
     setPrefectureCheckState((prevState) => ({
       ...prevState,
       [prefCode]: !prevState[prefCode],
     }));
   };
+  const checkedPrefectureCodes = () =>
+    Object.entries(prefectureCheckState)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .filter(([_prefCode, checked]) => checked)
+      .map(([prefCode]) => `${prefCode}`);
+
+  console.log(isChecked(1));
 
   return (
     <div className="App">
@@ -61,7 +94,7 @@ function App() {
             <label>
               <input
                 type="checkbox"
-                checked={checked(prefCode)}
+                checked={isChecked(prefCode)}
                 onClick={() => toggle(prefCode)}
               />
               {prefName}
@@ -69,6 +102,12 @@ function App() {
           </span>
         ))}
       </section>
+
+      {checkedPrefectureCodes().length === 0 ? (
+        <div>not selected</div>
+      ) : (
+        <Popu prefectureCodes={checkedPrefectureCodes()} />
+      )}
       <section>
         <h2>debug</h2>
         {JSON.stringify(prefectureCheckState)}
