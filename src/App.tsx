@@ -1,38 +1,31 @@
 import * as React from "react";
 import "./App.css";
 import { useEffect, useState } from "react";
-import ThePrefectureSelector from "./components/ThePrefectureSelector";
+import ThePrefectureSelector, {
+  createPrefectureCheckedState,
+  PrefectureCheckedState,
+} from "./components/ThePrefectureSelector";
 import { ThePopulationChartContainer } from "./components/ThePopulationChart";
 import usePrefectures from "./hooks/usePrefectures";
 
 function App() {
-  type PrefectureCheckState = Record<string, boolean>;
   const [prefectureCheckState, setPrefectureCheckState] =
-    useState<PrefectureCheckState>({});
+    useState<PrefectureCheckedState>({});
 
   const { prefectures, error } = usePrefectures();
 
   useEffect(() => {
     if (!prefectures) return;
-
-    const initState: PrefectureCheckState = prefectures.reduce(
-      (prev, { code }) => ({
-        ...prev,
-        [code]: false,
-      }),
-      {}
-    );
-
-    setPrefectureCheckState(initState);
+    setPrefectureCheckState(createPrefectureCheckedState(prefectures));
   }, [prefectures]);
 
-  if (error) return <div>failed to load</div>;
-  if (!prefectures) return <div>loading...</div>;
+  if (error) return <div>failed to load prefectures data.</div>;
+  if (!prefectures) return <div>loading prefectures data...</div>;
 
   const checkedPrefectureCodes = Object.entries(prefectureCheckState)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .filter(([_prefCode, checked]) => checked)
     .map(([prefCode]) => prefCode);
+  const canDrawChart = checkedPrefectureCodes.length > 0;
 
   return (
     <div className="App">
@@ -43,11 +36,9 @@ function App() {
         onChange={setPrefectureCheckState}
       />
 
-      {checkedPrefectureCodes.length === 0 ? (
-        <div>not selected</div>
-      ) : (
+      {canDrawChart ? (
         <ThePopulationChartContainer prefectureCodes={checkedPrefectureCodes} />
-      )}
+      ) : null}
     </div>
   );
 }

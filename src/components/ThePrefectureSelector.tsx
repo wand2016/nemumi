@@ -9,6 +9,17 @@ export type Props = {
   onChange: (checked: PrefectureCheckedState) => Promise<void> | void;
 };
 
+export const createPrefectureCheckedState = (
+  prefectures: Prefecture[]
+): PrefectureCheckedState =>
+  prefectures.reduce(
+    (prev, { code }) => ({
+      ...prev,
+      [code]: false,
+    }),
+    {}
+  );
+
 export default function ThePrefectureSelector({
   prefectures,
   checked,
